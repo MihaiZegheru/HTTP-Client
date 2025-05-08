@@ -3,6 +3,7 @@
 #include <arpa/inet.h>
 #include <inttypes.h>
 #include <memory.h>
+#include <unistd.h>
 
 #include "log.h"
 
@@ -20,5 +21,21 @@ HttpSession::HttpSession(const std::string_view host_ip, const uint16_t port) {
 
     int rc = connect(sockfd_, (sockaddr *)&server_addr, sizeof(server_addr));
     CHECK(rc >= 0, "connect");
+}
+
+Status HttpSession::Send(const std::string data) {
+    int rc;
+    int sent_bytes = 0;
+    int remaining_bytes = data.length();
+  
+    while(remaining_bytes) {
+      rc = write(sockfd_, data.c_str() + sent_bytes, remaining_bytes);
+      if (rc < 0) {
+        return Status(StatusCode::kFailed, "write");
+      }
+      remaining_bytes -= rc;
+      sent_bytes += rc;
+    }
+    return Status::OK();
 }
 } // namespace http

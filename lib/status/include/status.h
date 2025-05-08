@@ -1,5 +1,5 @@
-#ifndef STATUS_H_
-#define STATUS_H_
+#ifndef STATUS_H__
+#define STATUS_H__
 
 #include <ostream>
 #include <string>
@@ -7,6 +7,7 @@
 enum class StatusCode : int {
     kOk = 0,
     kUnknown = 1,
+    kFailed = 2,
 };
 
 class Status {
@@ -39,6 +40,7 @@ private:
         switch (code) {
             case StatusCode::kOk: return "OK";
             case StatusCode::kUnknown: return "UNKNOWN_ERROR";
+            case StatusCode::kFailed: return "FAILED_ERROR";
         }
     }
 
@@ -46,4 +48,4 @@ private:
     std::string message_;
 };
 
-#endif  // STATUS_H_
+#endif  // STATUS_H__

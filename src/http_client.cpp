@@ -1,19 +1,25 @@
 #include "http_client.h"
 
+#include "log.h"
+
 #include "http_session.h"
 
 namespace http {
 
-HttpSession HttpClient::Get() {
+HttpSessionData HttpClient::Get() {
     return PerformRequest(RequestType::kGet);
 }
 
-HttpSession HttpClient::Post(const std::string& data) {
+HttpSessionData HttpClient::Post(const std::string data) {
     return PerformRequest(RequestType::kPost, data);
 }
 
-HttpSession HttpClient::PerformRequest(RequestType method,
-                                  const std::string& data) {
-    return HttpSession(server_ip_, server_port_);
+HttpSessionData HttpClient::PerformRequest(RequestType method,
+                                           const std::string data) {
+    HttpSession session(server_ip_, server_port_);
+    Status result = session.Send("OK");
+    CHECK(result.ok(), result.message());
+
+    return session.data_;
 }
 } // namespace http

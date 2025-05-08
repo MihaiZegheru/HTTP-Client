@@ -10,4 +10,5 @@ const uint16_t kPort = 8081;
 
 int main() {
     http::HttpClient client(kIp, kPort);
+    client.Get();
 }

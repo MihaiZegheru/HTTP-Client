@@ -19,15 +19,15 @@ public:
         : server_ip_(ip),
         server_port_(port) {};
 
-    HttpSession Get();
-    HttpSession Post(const std::string& data);
+    HttpSessionData Get();
+    HttpSessionData Post(const std::string data);
 
 private:
     // Performs a request to the server by specified parameters. Calling this
     // function will end up in opening and closing a socket for communicating
     // with the server.
-    HttpSession PerformRequest(const RequestType method,
-                               const std::string& data = "");
+    HttpSessionData PerformRequest(const RequestType method,
+                                   const std::string data = "");
 
     std::string server_ip_;
     uint16_t server_port_;
