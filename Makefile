@@ -19,7 +19,7 @@ CLIENT_SRC = $(SRC_PATH)/client.cpp
 HEADERS = $(wildcard $(INCLUDE_PATH)/*.hpp) $(wildcard $(LIB_PATH)/**/include/**/*.hpp) $(wildcard $(EXTERNAL_PATH)/**/*.hpp)
 
 # C++ flags and compiler
-CXXFLAGS = -std=c++17 -Wall -Werror -Wno-error=unused-variable -I$(INCLUDE_PATH) -I./lib/log/include
+CXXFLAGS = -std=c++20 -Wall -Werror -Wno-error=unused-variable -I$(INCLUDE_PATH) -I./lib/log/include -I./lib/status/include
 CXX = g++
 
 # Default target: build everything
