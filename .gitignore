@@ -37,3 +37,4 @@ checker
 # Project
 client
 logs
+.vscode

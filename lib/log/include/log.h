@@ -2,6 +2,7 @@
 #define LOG_H__
 
 #include <cassert>
+#include <filesystem>
 #include <iostream>
 
 #define CHECK(exp, msg) assert((void(msg), (exp)))
