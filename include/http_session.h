@@ -1,36 +1,37 @@
 #ifndef HTTP_SESSION_H__
 #define HTTP_SESSION_H__
 
+#include <string>
 #include <inttypes.h>
-#include <unistd.h>
-#include <string_view>
 
-#include "status.h"
-
+#include "http_connection.h"
 
 namespace http {
 
-class HttpClient;
-
-struct HttpSessionData {
-
+enum RequestType {
+    kGet  = 1,
+    kPost = 2,
 };
 
-// Constructs a HttpSession by opening a connection with the server.
-// Automatically closes socket on destruction.
 class HttpSession {
-    friend HttpClient;
+public:
+    explicit HttpSession(const std::string_view ip, const uint16_t port)
+        : server_ip_(ip),
+        server_port_(port) {};
+
+    HttpResponse Get(const std::string route);
+    HttpResponse Post(const std::string route, const std::string data);
 
 private:
-    HttpSession(const std::string_view ip, const uint16_t port);
-    ~HttpSession() { close(sockfd_); }
+    // Performs a request to the server by specified parameters. Calling this
+    // function will end up in opening and closing a socket for communicating
+    // with the server.
+    HttpResponse PerformRequest(const RequestType method,
+                                const std::string route,
+                                const std::string data = "");
 
-    Status Send(const std::string data);
-    Status Receive();
-    void Close() { close(sockfd_); };
-
-    uint16_t sockfd_;
-    HttpSessionData data_;
+    std::string server_ip_;
+    uint16_t server_port_;
 };
 } // namespace http
 

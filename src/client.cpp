@@ -8,7 +8,7 @@
 
 #include "log.h"
 
-#include "http_client.h"
+#include "http_session.h"
 
 constexpr std::string_view kIp = "63.32.125.183";
 const uint16_t kPort = 8081;
@@ -26,7 +26,7 @@ std::vector<std::string> SplitBy(const std::string& str, const char delim) {
 }
 
 int main() {
-    http::HttpClient client(kIp, kPort);
+    http::HttpSession client(kIp, kPort);
 
     while (1) {
         std::string cmd;
