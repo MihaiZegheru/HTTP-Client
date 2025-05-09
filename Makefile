@@ -16,10 +16,12 @@ SRCS = $(wildcard $(SRC_PATH)/*.cpp) $(wildcard $(LIB_PATH)/**/src/*.cpp)
 CLIENT_SRC = $(SRC_PATH)/client.cpp
 
 # Header files (automatically include all headers in include/ and lib/)
-HEADERS = $(wildcard $(INCLUDE_PATH)/*.hpp) $(wildcard $(LIB_PATH)/**/include/**/*.hpp) $(wildcard $(EXTERNAL_PATH)/**/*.hpp)
+HEADERS = $(wildcard $(INCLUDE_PATH)/*.h) $(wildcard $(LIB_PATH)/**/include/*.h) $(wildcard $(EXTERNAL_PATH)/**/include/*.hpp)
+HEADER_DIRS = $(dir $(HEADERS))
 
 # C++ flags and compiler
-CXXFLAGS = -std=c++20 -Wall -Werror -Wno-error=unused-variable -I$(INCLUDE_PATH) -I./lib/log/include -I./lib/status/include
+INCLUDE_FLAGS = $(addprefix -I, $(sort $(HEADER_DIRS)))
+CXXFLAGS = -std=c++20 -Wall -Werror -Wno-error=unused-variable $(INCLUDE_FLAGS)
 CXX = g++
 
 # Default target: build everything
