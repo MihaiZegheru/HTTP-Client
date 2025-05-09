@@ -6,14 +6,19 @@
 #include <string_view>
 
 #include "status.h"
+#include "statusor.h"
 
 
 namespace http {
 
 class HttpSession;
 
-struct HttpResponse {
+using Path = std::string;
+using Header = std::map<std::string, std::string>;
+using Body = std::string;
 
+struct HttpResponse {
+    Body body;
 };
 
 // Constructs a HttpConnection by opening a connection with the server.
@@ -26,7 +31,7 @@ private:
     ~HttpConnection() { close(sockfd_); }
 
     Status Send(const std::string data);
-    Status Receive();
+    StatusOr<std::string> Receive();
 
     uint16_t sockfd_;
     HttpResponse data_;

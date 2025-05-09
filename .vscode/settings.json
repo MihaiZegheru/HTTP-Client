@@ -52,6 +52,11 @@
         "codecvt": "cpp",
         "ratio": "cpp",
         "iomanip": "cpp",
-        "variant": "cpp"
+        "variant": "cpp",
+        "cstring": "cpp",
+        "any": "cpp",
+        "forward_list": "cpp",
+        "map": "cpp",
+        "valarray": "cpp"
     }
 }

@@ -16,7 +16,7 @@ SRCS = $(wildcard $(SRC_PATH)/*.cpp) $(wildcard $(LIB_PATH)/**/src/*.cpp)
 CLIENT_SRC = $(SRC_PATH)/client.cpp
 
 # Header files (automatically include all headers in include/ and lib/)
-HEADERS = $(wildcard $(INCLUDE_PATH)/*.h) $(wildcard $(LIB_PATH)/**/include/*.h) $(wildcard $(EXTERNAL_PATH)/**/include/*.hpp)
+HEADERS = $(wildcard $(INCLUDE_PATH)/*.h) $(wildcard $(LIB_PATH)/**/include/*.h) $(wildcard $(EXTERNAL_PATH)/**/include/*.h)
 HEADER_DIRS = $(dir $(HEADERS))
 
 # C++ flags and compiler

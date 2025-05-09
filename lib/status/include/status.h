@@ -42,6 +42,7 @@ private:
             case StatusCode::kUnknown: return "UNKNOWN_ERROR";
             case StatusCode::kFailed: return "FAILED_ERROR";
         }
+        return "UNDEFINED";
     }
 
     StatusCode code_;
