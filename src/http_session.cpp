@@ -12,10 +12,20 @@ namespace http {
 
 namespace {
 
-std::string BuildHttpHeader(const Header header) {
+std::string BuildHttpHeader(const Header header, const Cookies cookies) {
     std::stringstream hdr;
     for (const auto& [key, value] : header) {
         hdr << key << ": " << value << "\r\n";
+    }
+    if (!cookies.empty()) {
+        hdr << "Cookie: ";
+        for (size_t i = 0; i < cookies.size(); ++i) {
+            hdr << cookies[i];
+            if (i + 1 < cookies.size()) {
+                hdr << "; ";
+            }
+        }
+        hdr << "\r\n";
     }
     return hdr.str();
 }
@@ -23,10 +33,11 @@ std::string BuildHttpHeader(const Header header) {
 std::string BuildHttpMessage(const RequestType reqType,
                              const Path path,
                              const Header header,
+                             const Cookies cookies,
                              const Body body) {
     std::stringstream message;
     message << toString(reqType) << " " << path << " " << "HTTP/1.1" << "\r\n"
-            << BuildHttpHeader(header) << "\r\n"
+            << BuildHttpHeader(header, cookies) << "\r\n"
             << body << "\r\n";
     return message.str();
 }
@@ -76,7 +87,9 @@ HttpResponse HttpSession::Get(const Path path) {
     return PerformRequest(RequestType::kGet, std::move(path));
 }
 
-HttpResponse HttpSession::Post(const Path path, Header header, const Body body) {
+HttpResponse HttpSession::Post(const Path path,
+                               Header header,
+                               const Body body) {
     return PerformRequest(RequestType::kPost,
                           std::move(path),
                           std::move(header),
@@ -94,15 +107,17 @@ HttpResponse HttpSession::PerformRequest(const RequestType reqType,
     Status result = connection.Send(
         std::move(BuildHttpMessage(reqType,
                                    std::move(path),
-                                   std::move(header), 
+                                   std::move(header),
+                                   cookies_,
                                    std::move(body))));
     CHECK(result.ok(), result.message());
 
-    StatusOr<std::string> answer_result = connection.Receive();
-    CHECK(answer_result.ok(), answer_result.status().message());
+    StatusOr<std::string> raw_result = connection.Receive();
+    CHECK(raw_result.ok(), raw_result.status().message());
 
-    StatusOr<HttpResponse> response_result = BuildHttpResponse(*answer_result);
+    StatusOr<HttpResponse> response_result = BuildHttpResponse(*raw_result);
     CHECK(response_result.ok(), response_result.status().message());
+    cookies_ = response_result->set_cookies;
 
     return *response_result;
 }

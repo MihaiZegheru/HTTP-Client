@@ -31,7 +31,9 @@ public:
         server_port_(port) {};
 
     HttpResponse Get(const Path path);
-    HttpResponse Post(const Path path, Header header, const Body body);
+    HttpResponse Post(const Path path,
+                      Header header,
+                      const Body body);
 
 private:
     // Performs a request to the server by specified parameters. Calling this
@@ -44,6 +46,8 @@ private:
 
     std::string server_ip_;
     uint16_t server_port_;
+
+    Cookies cookies_;
 };
 } // namespace http
 

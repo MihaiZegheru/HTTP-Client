@@ -22,12 +22,14 @@ void PrintAnswer(nlohmann::json body) {
 }
 
 int main() {
+    LOG_DEBUG("STARTED");
     http::HttpSession session(kIp, kPort);
 
     Reader reader;
 
     while (1) {
         reader.ReadHiddenParams({"command"});
+        LOG_DEBUG(reader["command"]);
 
         if (reader["command"] == "login_admin") {
             reader.ReadParams({"username", "password"});
@@ -41,7 +43,9 @@ int main() {
                 http::Header{{"Content-Type", "application/json"}},
                 http::Body(body.dump()));
             LOG_DEBUG("Received " + std::to_string(res.status_code));
-            CHECK(res.status_code == 200, "Response code " + res.status_code);
+            LOG_DEBUG(res.set_cookies[0]);
+            CHECK(res.status_code >= 200 && res.status_code < 300,
+                  "Response code " + res.status_code);
             PrintAnswer(nlohmann::json::parse(res.body));
         } else if (reader["command"] == "add_user") {
             reader.ReadParams({"username", "password"});
@@ -54,10 +58,10 @@ int main() {
                 http::Path{"/api/v1/tema/admin/users"},
                 http::Header{{"Content-Type", "application/json"}},
                 http::Body(body.dump()));
-            LOG_DEBUG("Received " + res.status_code);
-
+            LOG_DEBUG("Received " + std::to_string(res.status_code));
+            CHECK(res.status_code >= 200 && res.status_code < 300,
+                  "Response code " + res.status_code);
             PrintAnswer(nlohmann::json::parse(res.body));
         }
-        break;
     }
 }
