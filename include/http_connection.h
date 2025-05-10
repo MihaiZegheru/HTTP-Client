@@ -4,10 +4,10 @@
 #include <inttypes.h>
 #include <unistd.h>
 #include <string_view>
+#include <vector>
 
 #include "status.h"
 #include "statusor.h"
-
 
 namespace http {
 
@@ -16,8 +16,14 @@ class HttpSession;
 using Path = std::string;
 using Header = std::map<std::string, std::string>;
 using Body = std::string;
+using Cookies = std::vector<std::string>;
 
 struct HttpResponse {
+    std::string http_version;
+    int status_code;
+    std::string status_message;
+    Header header;
+    Cookies set_cookies;
     Body body;
 };
 

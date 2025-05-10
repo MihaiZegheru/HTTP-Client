@@ -7,12 +7,10 @@
 
 #include "log.h"
 
+static const size_t kMaxBufLen = 5000;
+static char buffer[kMaxBufLen];
+
 namespace http {
-
-namespace {
-
-const size_t kMaxBufLen = 2500;
-} // namespace
 
 HttpConnection::HttpConnection(const std::string_view host_ip, const uint16_t port) {
     sockfd_ = socket(PF_INET, SOCK_STREAM, 0);
@@ -48,7 +46,6 @@ Status HttpConnection::Send(const std::string data) {
 
 StatusOr<std::string> HttpConnection::Receive() {
     std::string response;
-    char buffer[kMaxBufLen];
     ssize_t bytes_read;
     size_t header_end = std::string::npos;
     while ((bytes_read = read(sockfd_, buffer, sizeof(buffer))) > 0) {
@@ -84,6 +81,6 @@ StatusOr<std::string> HttpConnection::Receive() {
         response.append(buffer, bytes_read);
         body_read += bytes_read;
     }
-    return response.substr(body_begin, content_length);
+    return response;
 }
 } // namespace http
