@@ -62,15 +62,12 @@ StatusOr<std::string> HttpConnection::Receive() {
     std::string header_section = response.substr(0, header_end);
     std::stringstream headers_stream(header_section);
     std::string line;
-    int content_length = -1;
+    int content_length = 0;
     while (std::getline(headers_stream, line)) {
         if (line.find("Content-Length:") != std::string::npos) {
             content_length = std::stoi(line.substr(line.find(":") + 1));
             break;
         }
-    }
-    if (content_length == -1) {
-        return Status(StatusCode::kFailed);
     }
 
     size_t body_begin = header_end + 4;

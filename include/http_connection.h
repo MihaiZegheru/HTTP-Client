@@ -13,10 +13,16 @@ namespace http {
 
 class HttpSession;
 
+struct Cookie {
+    std::string name;
+    std::string value;
+    std::map<std::string, std::string> attributes;
+};
+
 using Path = std::string;
 using Header = std::map<std::string, std::string>;
 using Body = std::string;
-using Cookies = std::vector<std::string>;
+using Cookies = std::vector<Cookie>;
 
 struct HttpResponse {
     std::string http_version;
