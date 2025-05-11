@@ -2,8 +2,8 @@
 #define HTTP_SESSION_H__
 
 #include <inttypes.h>
-#include <string>
 #include <map>
+#include <string>
 #include <unordered_map>
 
 #include "http_connection.h"
@@ -43,7 +43,9 @@ private:
                                 const Path path,
                                 Header header={},
                                 const Body body="");
-
+    
+    // Updated the session's cookies by taking in new cookies and adding or
+    // changing old cookie values.
     void UpdateCookies(Cookies new_cookies);
 
     std::string server_ip_;

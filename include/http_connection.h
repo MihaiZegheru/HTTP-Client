@@ -2,8 +2,8 @@
 #define HTTP_CONNECTION_H__
 
 #include <inttypes.h>
-#include <unistd.h>
 #include <string_view>
+#include <unistd.h>
 #include <unordered_map>
 #include <vector>
 
@@ -14,6 +14,10 @@ namespace http {
 
 class HttpSession;
 
+// TODO: Cookies should be added an expiration date/TTL.
+
+// Defines a structure for Cookies that should be stored per session and
+// updated accordingly.
 struct Cookie {
     std::string name;
     std::string value;
@@ -23,7 +27,7 @@ struct Cookie {
 using Path = std::string;
 using Header = std::unordered_map<std::string, std::string>;
 using Body = std::string;
-using Cookies = std::vector<Cookie>;
+using Cookies = std::unordered_map<std::string, Cookie>;
 
 struct HttpResponse {
     std::string raw;
@@ -48,7 +52,7 @@ private:
     StatusOr<std::string> Receive();
 
     uint16_t sockfd_;
-    HttpResponse data_;
+    HttpResponse response_;
 };
 } // namespace http
 

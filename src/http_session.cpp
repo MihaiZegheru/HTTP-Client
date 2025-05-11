@@ -15,10 +15,13 @@ namespace {
     std::string BuildCookiesHeader(const Cookies cookies) {
         std::stringstream ss;
         ss << "Cookie: ";
-        for (size_t i = 0; i < cookies.size(); ++i) {
-            ss << cookies[i].name << "=" << cookies[i].value;
-            if (i != cookies.size() - 1)
+        bool first = true;
+        for (const auto& [name, cookie] : cookies) {
+            if (!first) {
                 ss << "; ";
+            }
+            first = false;
+            ss << name << "=" << cookie.value;
         }
         return ss.str();
     }
@@ -100,7 +103,8 @@ namespace {
             }
             size_t colon = line.find(':');
             if (line.substr(0, 11) == "Set-Cookie:") {
-                result.set_cookies.push_back(ParseCookiesFromHeader(line.substr(11)));
+                Cookie cookie = ParseCookiesFromHeader(line.substr(11));
+                result.set_cookies.insert({cookie.name, cookie});
             } else if (colon != std::string::npos) {
                 std::string key = line.substr(0, colon);
                 std::string value = line.substr(colon + 1);
@@ -114,18 +118,18 @@ namespace {
 } // namespace
 
 void HttpSession::UpdateCookies(Cookies new_cookies) {
-    for (auto new_cookie : new_cookies) {
+    for (const auto &new_cookie : new_cookies) {
         bool matched_cookies = false;
-        for (auto potential_cookie : cookies_) {
-            if (potential_cookie.name != new_cookie.name) {
+        for (auto &potential_cookie : cookies_) {
+            if (potential_cookie.second.name != new_cookie.second.name) {
                 continue;
             }
-            potential_cookie = new_cookie;
+            potential_cookie.second = new_cookie.second;
             matched_cookies = true;
             break;
         }
         if (!matched_cookies) {
-            cookies_.push_back(new_cookie);
+            cookies_.insert(new_cookie);
         }
     }
 }

@@ -24,7 +24,6 @@ void PrintAnswer(nlohmann::json body) {
 }
 
 int main() {
-    LOG_DEBUG("STARTED");
     http::HttpSession session(kIp, kPort);
 
     Reader reader;
