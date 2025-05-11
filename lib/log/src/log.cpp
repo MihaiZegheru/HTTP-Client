@@ -15,4 +15,7 @@ std::string GetExecutableDir() {
 #ifdef DEBUG
     const std::string kLogFilePath = GetExecutableDir() + LOG_FILE;
     std::ofstream _log_file(kLogFilePath, std::ios::trunc);
+
+    const std::string kLogTestFilePath = GetExecutableDir() + LOG_TEST_FILE;
+    std::ofstream _log_test_file(kLogTestFilePath, std::ios::trunc);
 #endif

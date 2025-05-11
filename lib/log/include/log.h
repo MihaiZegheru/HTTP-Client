@@ -9,16 +9,33 @@
 
 #define LOG_INFO(msg) std::cout << msg << std::endl
 
+#define TEST_INFO(msg) std::cout << msg << std::endl
+
 #ifdef DEBUG
     #include <fstream>
     #ifndef LOG_FILE
         #define LOG_FILE "default.log"
     #endif
-    extern std::ofstream _log_file;
+    #ifndef LOG_TEST_FILE
+        #define LOG_TEST_FILE "default_test.log"
+    #endif
+    extern std::ofstream _log_file, _log_test_file;
     #define LOG_DEBUG(msg) _log_file << "DEBUG :: " << __FILE__ << ":" \
+                                     << __LINE__ << " :: " << msg << std::endl
+    #define TEST_DEBUG(msg) _log_test_file << "DEBUG :: " << __FILE__ << ":" \
                                      << __LINE__ << " :: " << msg << std::endl
 #else
     #define LOG_DEBUG(msg)
+    #define TEST_DEBUG(msg)
 #endif
+
+#define TEST_CHECK(exp, msg) \
+    do { \
+        if (!(exp)) { \
+            TEST_DEBUG(std::string("CHECK FAILED: ") + #exp + " :: " + msg); \
+            assert(exp); \
+        } \
+    } while (0)
+
 
 #endif // LOG_H__

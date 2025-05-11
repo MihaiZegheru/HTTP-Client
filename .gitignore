@@ -36,5 +36,6 @@ checker
 
 # Project
 client
+tester
 logs
 .vscode
