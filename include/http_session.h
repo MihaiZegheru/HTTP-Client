@@ -20,8 +20,8 @@ const std::unordered_map<RequestType, std::string> requestTypeToString = {
     {RequestType::kPost, "POST"}
 };
 
-inline std::string toString(const RequestType reqType) {
-    return requestTypeToString.at(reqType);
+inline std::string toString(const RequestType req_type) {
+    return requestTypeToString.at(req_type);
 }
 
 class HttpSession {
@@ -39,14 +39,17 @@ private:
     // Performs a request to the server by specified parameters. Calling this
     // function will end up in opening and closing a socket for communicating
     // with the server.
-    HttpResponse PerformRequest(const RequestType reqType,
+    HttpResponse PerformRequest(const RequestType req_type,
                                 const Path path,
                                 Header header={},
                                 const Body body="");
 
+    void UpdateCookies(Cookies new_cookies);
+
     std::string server_ip_;
     uint16_t server_port_;
 
+    // TODO: Make Cookies a map from cookie name to Cookie.
     Cookies cookies_;
 };
 } // namespace http

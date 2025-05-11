@@ -4,6 +4,7 @@
 #include <inttypes.h>
 #include <unistd.h>
 #include <string_view>
+#include <unordered_map>
 #include <vector>
 
 #include "status.h"
@@ -16,15 +17,16 @@ class HttpSession;
 struct Cookie {
     std::string name;
     std::string value;
-    std::map<std::string, std::string> attributes;
+    std::unordered_map<std::string, std::string> attributes;
 };
 
 using Path = std::string;
-using Header = std::map<std::string, std::string>;
+using Header = std::unordered_map<std::string, std::string>;
 using Body = std::string;
 using Cookies = std::vector<Cookie>;
 
 struct HttpResponse {
+    std::string raw;
     std::string http_version;
     int status_code;
     std::string status_message;

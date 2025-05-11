@@ -84,6 +84,7 @@ int main() {
             CHECK(res.status_code >= 200 && res.status_code < 300,
                   "Response code " + res.status_code);
             PrintAnswer(nlohmann::json::parse(res.body));
+            LOG_DEBUG(res.raw);
         } else if (reader["command"] == "login") {
             reader.ReadParams({"admin_username", "username", "password"});
             
@@ -102,6 +103,7 @@ int main() {
             CHECK((res.status_code >= 200 && res.status_code < 300) ||
                   res.status_code == 403,
                   "Response code " + res.status_code);
+            LOG_DEBUG(res.raw);
             PrintAnswer(nlohmann::json::parse(res.body));
         }
     }

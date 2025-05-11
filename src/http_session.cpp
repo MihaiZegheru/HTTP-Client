@@ -34,13 +34,13 @@ namespace {
         return hdr.str();
     }
     
-    std::string BuildHttpMessage(const RequestType reqType,
+    std::string BuildHttpMessage(const RequestType req_type,
                                  const Path path,
                                  const Header header,
                                  const Cookies cookies,
                                  const Body body) {
         std::stringstream message;
-        message << toString(reqType) << " " << path << " " << "HTTP/1.1" << "\r\n"
+        message << toString(req_type) << " " << path << " " << "HTTP/1.1" << "\r\n"
                 << BuildHttpHeader(header, cookies) << "\r\n"
                 << body << "\r\n";
         return message.str();
@@ -75,6 +75,7 @@ namespace {
     
     StatusOr<HttpResponse> BuildHttpResponse(const std::string response) {
         HttpResponse result;
+        result.raw = response;
         size_t header_end = response.find("\r\n\r\n");
         if (header_end == std::string::npos) {
             return Status(StatusCode::kFailed);
@@ -112,6 +113,23 @@ namespace {
     }
 } // namespace
 
+void HttpSession::UpdateCookies(Cookies new_cookies) {
+    for (auto new_cookie : new_cookies) {
+        bool matched_cookies = false;
+        for (auto potential_cookie : cookies_) {
+            if (potential_cookie.name != new_cookie.name) {
+                continue;
+            }
+            potential_cookie = new_cookie;
+            matched_cookies = true;
+            break;
+        }
+        if (!matched_cookies) {
+            cookies_.push_back(new_cookie);
+        }
+    }
+}
+
 HttpResponse HttpSession::Get(const Path path) {
     return PerformRequest(RequestType::kGet, std::move(path));
 }
@@ -125,7 +143,7 @@ HttpResponse HttpSession::Post(const Path path,
                           std::move(body));
 }
 
-HttpResponse HttpSession::PerformRequest(const RequestType reqType,
+HttpResponse HttpSession::PerformRequest(const RequestType req_type,
                                          const Path path,
                                          Header header,
                                          const Body body) {
@@ -134,7 +152,7 @@ HttpResponse HttpSession::PerformRequest(const RequestType reqType,
     header["Content-Length"] = std::to_string(body.length());
 
     Status result = connection.Send(
-        std::move(BuildHttpMessage(reqType,
+        std::move(BuildHttpMessage(req_type,
                                    std::move(path),
                                    std::move(header),
                                    cookies_,
@@ -146,10 +164,8 @@ HttpResponse HttpSession::PerformRequest(const RequestType reqType,
 
     StatusOr<HttpResponse> response_result = BuildHttpResponse(*raw_result);
     CHECK(response_result.ok(), response_result.status().message());
-    HttpResponse response = *response_result;
-    cookies_.insert(cookies_.end(), response.set_cookies.begin(),
-                    response.set_cookies.end());
 
+    UpdateCookies(response_result->set_cookies);
     return *response_result;
 }
 } // namespace http
