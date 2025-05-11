@@ -30,7 +30,8 @@ public:
         : server_ip_(ip),
         server_port_(port) {};
 
-    HttpResponse Get(const Path path);
+    HttpResponse Get(const Path path,
+                     Header header={});
     HttpResponse Post(const Path path,
                       Header header,
                       const Body body);

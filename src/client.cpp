@@ -28,6 +28,8 @@ int main() {
 
     Reader reader;
 
+    std::string jwt;
+
     while (1) {
         reader.ReadHiddenParams({"command"});
         LOG_DEBUG(reader["command"]);
@@ -104,6 +106,66 @@ int main() {
                   "Response code " + res.status_code);
             LOG_DEBUG(res.raw);
             PrintAnswer(nlohmann::json::parse(res.body));
+        } else if (reader["command"] == "get_access") {
+            http::HttpResponse res = session.Get("/api/v1/tema/library/access");
+            CHECK((res.status_code >= 200 && res.status_code < 300) ||
+                  res.status_code == 403,
+                  "Response code " + res.status_code);
+            LOG_INFO("SUCCESS: Token JWT primit");
+            jwt = nlohmann::json::parse(res.body)["token"];
+        } else if (reader["command"] == "logout") {
+            http::HttpResponse res = session.Get(
+                http::Path{"/api/v1/tema/user/logout"});
+            CHECK(res.status_code >= 200 && res.status_code < 300,
+                  "Response code " + res.status_code);
+            PrintAnswer(nlohmann::json::parse(res.body));
+        } else if (reader["command"] == "get_movies") {
+            http::HttpResponse res = session.Get(
+                http::Path{"/api/v1/tema/library/movies"},
+                http::Header{{"Authorization", "Bearer " + jwt}});
+            LOG_DEBUG(res.raw);
+            CHECK(res.status_code >= 200 && res.status_code < 300,
+                  "Response code " + res.status_code);
+
+            LOG_INFO("SUCCESS: Lista filmelor");
+            nlohmann::json movies = nlohmann::json::parse(res.body)["movies"];
+            int index = 1;
+            for (auto movie : movies) {
+                LOG_INFO("#" + std::to_string(index++) + " " +
+                         movie["title"].get<std::string>() + " " +
+                         std::to_string(movie["id"].get<int>()));
+            }
+        } else if (reader["command"] == "get_movie") {
+            reader.ReadParams({"id"});
+
+            http::HttpResponse res = session.Get(
+                http::Path{"/api/v1/tema/library/movies/" + reader["id"]},
+                http::Header{{"Authorization", "Bearer " + jwt}});
+            if (res.status_code >= 200 && res.status_code < 300) {
+                LOG_INFO(nlohmann::json::parse(res.body));
+            } else {
+                LOG_INFO("ERROR: Filmul cu id=" + reader["id"] + " nu exista!");
+            }
+        } else if (reader["command"] == "add_movie") {
+            reader.ReadParams({"title", "year", "description", "rating"});
+
+            nlohmann::json body;
+            body["title"] = reader["title"];
+            body["year"] = atoi(reader["year"].c_str());
+            body["description"] = reader["description"];
+            body["rating"] = atoi(reader["rating"].c_str());
+            
+            // TODO: Add a formal way to add a JWT.
+            
+            http::HttpResponse res = session.Post(
+                http::Path{"/api/v1/tema/library/movies"},
+                http::Header{{"Content-Type", "application/json"},
+                             {"Authorization", "Bearer " + jwt}},
+                http::Body(body.dump()));
+            CHECK((res.status_code >= 200 && res.status_code < 300) ||
+                  res.status_code == 403,
+                  "Response code " + res.status_code);
+            LOG_INFO("SUCCESS: Film adaugat");
         }
     }
 }

@@ -134,8 +134,10 @@ void HttpSession::UpdateCookies(Cookies new_cookies) {
     }
 }
 
-HttpResponse HttpSession::Get(const Path path) {
-    return PerformRequest(RequestType::kGet, std::move(path));
+HttpResponse HttpSession::Get(const Path path, Header header) {
+    return PerformRequest(RequestType::kGet,
+                          std::move(path),
+                          std::move(header));
 }
 
 HttpResponse HttpSession::Post(const Path path,

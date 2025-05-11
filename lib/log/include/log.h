@@ -13,12 +13,6 @@
 
 #ifdef DEBUG
     #include <fstream>
-    #ifndef LOG_FILE
-        #define LOG_FILE "default.log"
-    #endif
-    #ifndef LOG_TEST_FILE
-        #define LOG_TEST_FILE "default_test.log"
-    #endif
     extern std::ofstream _log_file, _log_test_file;
     #define LOG_DEBUG(msg) _log_file << "DEBUG :: " << __FILE__ << ":" \
                                      << __LINE__ << " :: " << msg << std::endl
