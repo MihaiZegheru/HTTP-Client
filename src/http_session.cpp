@@ -149,6 +149,12 @@ HttpResponse HttpSession::Post(const Path path,
                           std::move(body));
 }
 
+HttpResponse HttpSession::Delete(const Path path, Header header) {
+    return PerformRequest(RequestType::kDelete,
+                          std::move(path),
+                          std::move(header));
+}
+
 HttpResponse HttpSession::PerformRequest(const RequestType req_type,
                                          const Path path,
                                          Header header,

@@ -13,11 +13,13 @@ namespace http {
 enum RequestType : int {
     kGet  = 1,
     kPost = 2,
+    kDelete = 3,
 };
 
 const std::unordered_map<RequestType, std::string> requestTypeToString = {
     {RequestType::kGet, "GET"},
-    {RequestType::kPost, "POST"}
+    {RequestType::kPost, "POST"},
+    {RequestType::kDelete, "DELETE"}
 };
 
 inline std::string toString(const RequestType req_type) {
@@ -32,9 +34,13 @@ public:
 
     HttpResponse Get(const Path path,
                      Header header={});
+
     HttpResponse Post(const Path path,
                       Header header,
                       const Body body);
+
+    HttpResponse Delete(const Path path,
+                        Header header={});
 
 private:
     // Performs a request to the server by specified parameters. Calling this
