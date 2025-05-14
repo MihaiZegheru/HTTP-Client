@@ -1,5 +1,5 @@
-#ifndef READER_H
-#define READER_H
+#ifndef READER_H__
+#define READER_H__
 
 #include <string>
 #include <vector>
@@ -16,4 +16,4 @@ private:
     std::unordered_map<std::string, std::string> values;
 };
 
-#endif // READER_H
+#endif // READER_H__

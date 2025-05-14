@@ -7,6 +7,7 @@
 #include "json.h"
 #include "log.h"
 
+ #include "commander.h"
 #include "reader.h"
 #include "http_session.h"
 
@@ -28,6 +29,11 @@ int main() {
 
     Reader reader;
 
+    command::Commander commander(command::Context {
+        .session = http::HttpSession(kIp, kPort),
+        .jwt = {}
+    });
+
     std::string jwt;
 
     while (1) {
@@ -37,57 +43,13 @@ int main() {
         // TODO: Separate into distinct commands.
 
         if (reader["command"] == "login_admin") {
-            reader.ReadParams({"username", "password"});
-
-            nlohmann::json body;
-            body["username"] = reader["username"];
-            body["password"] = reader["password"];
-
-            http::HttpResponse res = session.Post(
-                http::Path{"/api/v1/tema/admin/login"},
-                http::Header{{"Content-Type", "application/json"}},
-                http::Body(body.dump()));
-            LOG_DEBUG("Received " + std::to_string(res.status_code));
-            CHECK(res.status_code >= 200 && res.status_code < 300,
-                  "Response code " + res.status_code);
-            PrintAnswer(nlohmann::json::parse(res.body));
+            commander.LoginAdmin();
         } else if (reader["command"] == "add_user") {
-            reader.ReadParams({"username", "password"});
-            
-            nlohmann::json body;
-            body["username"] = reader["username"];
-            body["password"] = reader["password"];
-
-            http::HttpResponse res = session.Post(
-                http::Path{"/api/v1/tema/admin/users"},
-                http::Header{{"Content-Type", "application/json"}},
-                http::Body(body.dump()));
-            LOG_DEBUG("Received " + std::to_string(res.status_code));
-            CHECK(res.status_code >= 200 && res.status_code < 300,
-                  "Response code " + res.status_code);
-            PrintAnswer(nlohmann::json::parse(res.body));
+            commander.AddUser();
         } else if (reader["command"] == "get_users") {
-            http::HttpResponse res = session.Get(
-                http::Path{"/api/v1/tema/admin/users"});
-            LOG_DEBUG("Received " + std::to_string(res.status_code));
-            CHECK(res.status_code >= 200 && res.status_code < 300,
-                  "Response code " + res.status_code);
-            LOG_INFO("SUCCESS: Lista utilizatorilor");
-            nlohmann::json users = nlohmann::json::parse(res.body)["users"];
-            int index = 1;
-            for (auto user : users) {
-                LOG_INFO("#" + std::to_string(index++) + " " +
-                         user["username"].get<std::string>() + ":" +
-                         user["password"].get<std::string>());
-            }
+            commander.GetUsers();
         } else if (reader["command"] == "logout_admin") {
-            http::HttpResponse res = session.Get(
-                http::Path{"/api/v1/tema/admin/logout"});
-            LOG_DEBUG("Received " + std::to_string(res.status_code));
-            CHECK(res.status_code >= 200 && res.status_code < 300,
-                  "Response code " + res.status_code);
-            PrintAnswer(nlohmann::json::parse(res.body));
-            LOG_DEBUG(res.raw);
+            commander.LogoutAdmin();
         } else if (reader["command"] == "login") {
             reader.ReadParams({"admin_username", "username", "password"});
             
@@ -288,6 +250,8 @@ int main() {
                   res.status_code == 403,
                   "Response code " + res.status_code);
             LOG_INFO("SUCCESS: Film adaugat in colectie");
-        } 
+        } else if (reader["command"] == "exit") {
+            break;
+        }
     }
 }
