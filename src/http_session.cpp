@@ -58,13 +58,14 @@ namespace {
         while (std::getline(ss, token, ';')) {
             size_t eq = token.find('=');
             std::string key = token.substr(0, eq);
-            std::string value = eq != std::string::npos ? token.substr(eq + 1) : "";
-    
+            std::string value = eq != std::string::npos
+                                ? token.substr(eq + 1)
+                                : "";
             key.erase(0, key.find_first_not_of(" \t"));
             key.erase(key.find_last_not_of(" \t") + 1);
             value.erase(0, value.find_first_not_of(" \t"));
             value.erase(value.find_last_not_of(" \t") + 1);
-    
+
             if (is_first) {
                 cookie.name = key;
                 cookie.value = value;
@@ -144,6 +145,13 @@ HttpResponse HttpSession::Post(const Path path,
                                Header header,
                                const Body body) {
     return PerformRequest(RequestType::kPost,
+                          std::move(path),
+                          std::move(header),
+                          std::move(body));
+}
+
+HttpResponse HttpSession::Put(const Path path, Header header, const Body body) {
+    return PerformRequest(RequestType::kPut,
                           std::move(path),
                           std::move(header),
                           std::move(body));

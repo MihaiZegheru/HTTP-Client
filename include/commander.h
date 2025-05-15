@@ -19,6 +19,7 @@ public:
     void LoginAdmin();
     void LogoutAdmin();
     void AddUser();
+    void DeleteUser();
     void GetUsers();
 
     void Login();
@@ -28,6 +29,7 @@ public:
     void GetMovies();
     void GetMovie();
     void AddMovie();
+    void UpdateMovie();
     void DeleteMovie();
 
     void GetCollections();
@@ -35,6 +37,7 @@ public:
     void AddCollection();
     void DeleteCollection();
     void AddMovieToCollection();
+    void DeleteMovieFromCollection();
 
 private:
     Context context_;

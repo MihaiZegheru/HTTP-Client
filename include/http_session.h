@@ -13,12 +13,14 @@ namespace http {
 enum RequestType : int {
     kGet  = 1,
     kPost = 2,
-    kDelete = 3,
+    kPut = 3,
+    kDelete = 4,
 };
 
 const std::unordered_map<RequestType, std::string> requestTypeToString = {
     {RequestType::kGet, "GET"},
     {RequestType::kPost, "POST"},
+    {RequestType::kPut, "PUT"},
     {RequestType::kDelete, "DELETE"}
 };
 
@@ -32,12 +34,19 @@ public:
         : server_ip_(ip),
         server_port_(port) {};
 
+    // TODO: Refactor to return StatusOr<HttpResponse> and remove CHECK
+    // instances.
+
     HttpResponse Get(const Path path,
                      Header header={});
 
     HttpResponse Post(const Path path,
                       Header header,
                       const Body body);
+
+    HttpResponse Put(const Path path,
+                        Header header,
+                        const Body body);
 
     HttpResponse Delete(const Path path,
                         Header header={});
