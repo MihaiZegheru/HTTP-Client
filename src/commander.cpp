@@ -158,11 +158,6 @@ void Commander::GetMovie() {
     http::HttpResponse res = context_.session.Get(
         http::Path{"/api/v1/tema/library/movies/" + reader["id"]},
         http::Header{{"Authorization", "Bearer " + context_.jwt}});
-    // if (res.status_code >= 200 && res.status_code < 300) {
-    //     LOG_INFO(nlohmann::json::parse(res.body));
-    // } else {
-    //     LOG_INFO("ERROR: Filmul cu id=" + reader["id"] + " nu exista!");
-    // }
     LOG_DEBUG(res.raw);
     PrintAnswer(res.status_code, nlohmann::json::parse(res.body));
 }
