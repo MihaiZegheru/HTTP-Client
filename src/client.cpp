@@ -14,16 +14,6 @@
 constexpr std::string_view kIp = "63.32.125.183";
 const uint16_t kPort = 8081;
 
-void PrintAnswer(nlohmann::json body) {
-    if (body.contains("error")) {
-        LOG_INFO("ERROR: " + std::string(body["error"]));
-    } else if (body.contains("message")){
-        LOG_INFO("SUCCESS: " + std::string(body["message"]));
-    } else {
-        LOG_INFO(body);
-    }
-}
-
 int main() {
     http::HttpSession session(kIp, kPort);
 
