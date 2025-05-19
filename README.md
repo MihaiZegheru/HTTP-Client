@@ -31,3 +31,7 @@ Classes like `Status` or `StatusOr` mostly follow Google's API.
 `Reader` provides a nice modular way of reading specific parameters and then
 aggregating them in a json format.
 `Log` provides logging for the project, including unit tests.
+
+### External Libraries
+
+For json parsing I chose nlohmann's libarary.
